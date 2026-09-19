@@ -2,7 +2,7 @@
 Streamlit playground for the IML Hackathon image classifier.
 
 Two tabs:
-  1. Architecture — explains the network design (from README.txt)
+  1. Architecture — explains the network design (from README.md)
   2. Try It       — upload an image, apply the same kinds of distortions
                      used during fine-tuning, and see whether the model
                      still recognizes it.
@@ -76,7 +76,7 @@ def predict(model, img: Image.Image):
 
 
 # --------------------------------------------------------------------------
-# Distortions (mirrors the manipulations listed in README.txt)
+# Distortions (mirrors the manipulations listed in README.md)
 # --------------------------------------------------------------------------
 def apply_distortions(img: Image.Image, opts: dict) -> Image.Image:
     out = img.convert("RGB")
