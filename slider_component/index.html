@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    direction: ltr;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: transparent;
+  }
+  .wrap {
+    padding: 4px 2px 10px 2px;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .label {
+    font-size: 14px;
+    color: #31333F;
+  }
+  .value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #FF4B4B;
+  }
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    outline: none;
+    direction: ltr;
+    background: #E6E6EA; /* overwritten inline per-value */
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #FF4B4B;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 2px rgba(0,0,0,0.35);
+    cursor: pointer;
+    margin-top: -6px;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #FF4B4B;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 2px rgba(0,0,0,0.35);
+    cursor: pointer;
+  }
+  input[type="range"]::-moz-range-progress {
+    background: #FF4B4B;
+    height: 6px;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="row">
+      <span class="label" id="label"></span>
+      <span class="value" id="value"></span>
+    </div>
+    <input type="range" id="slider" />
+  </div>
+
+<script>
+  // --- Minimal implementation of the Streamlit static-component protocol ---
+  // (postMessage handshake; no build step / no streamlit-component-lib needed)
+  function sendMessage(type, extra) {
+    window.parent.postMessage(
+      Object.assign({ isStreamlitMessage: true, type: type }, extra),
+      "*"
+    );
+  }
+  function setComponentValue(value) {
+    sendMessage("streamlit:setComponentValue", { value: value });
+  }
+  function setFrameHeight() {
+    sendMessage("streamlit:setFrameHeight", { height: document.documentElement.scrollHeight });
+  }
+
+  const sliderEl = document.getElementById("slider");
+  const labelEl = document.getElementById("label");
+  const valueEl = document.getElementById("value");
+
+  let initialized = false;
+
+  function updateFill() {
+    const min = parseFloat(sliderEl.min);
+    const max = parseFloat(sliderEl.max);
+    const val = parseFloat(sliderEl.value);
+    const pct = ((val - min) / (max - min)) * 100;
+    sliderEl.style.background =
+      `linear-gradient(to right, #FF4B4B 0%, #FF4B4B ${pct}%, #E6E6EA ${pct}%, #E6E6EA 100%)`;
+    valueEl.textContent = val;
+  }
+
+  sliderEl.addEventListener("input", () => {
+    updateFill();
+    setComponentValue(parseFloat(sliderEl.value));
+  });
+
+  window.addEventListener("message", (event) => {
+    if (!event.data || event.data.type !== "streamlit:render") return;
+    const args = event.data.args || {};
+
+    labelEl.textContent = args.label ?? "";
+    sliderEl.min = args.min_value;
+    sliderEl.max = args.max_value;
+    sliderEl.step = args.step ?? 1;
+
+    // Only set the value from Python on the very first render. After that,
+    // the slider's own DOM state is the source of truth so the thumb
+    // doesn't jump back to the default on every Streamlit rerun.
+    if (!initialized) {
+      sliderEl.value = args.value ?? 0;
+      initialized = true;
+    }
+
+    updateFill();
+    setFrameHeight();
+  });
+
+  sendMessage("streamlit:componentReady", { apiVersion: 1 });
+  setFrameHeight();
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="20b62c93-107b-44ae-88e1-95bb7cea2bf4" name="Changes" comment="Updated the README file.&#10;Added run_app.py to avoid any command line prompts.">
+    <list default="true" id="20b62c93-107b-44ae-88e1-95bb7cea2bf4" name="Changes" comment="Fixed RTL sliders in the distortion settings.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/streamlit_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamlit_app.py" afterDir="false" />
     </list>
@@ -67,7 +67,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1789831153782</updated>
-      <workItem from="1789831155138" duration="2096000" />
+      <workItem from="1789831155138" duration="3523000" />
     </task>
     <task id="LOCAL‎-00001" summary="Added requirements.">
       <option name="closed" value="true" />
@@ -93,7 +93,23 @@
       <option name="project" value="LOCAL‎" />
       <updated>1789832364867</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL‎-00004" summary="Updated the README file.&#10;Added example Images.&#10;Added names for th classes.">
+      <option name="closed" value="true" />
+      <created>1789833320172</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL‎-00004" />
+      <option name="project" value="LOCAL‎" />
+      <updated>1789833320172</updated>
+    </task>
+    <task id="LOCAL‎-00005" summary="Fixed RTL sliders in the distortion settings.">
+      <option name="closed" value="true" />
+      <created>1789833528212</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL‎-00005" />
+      <option name="project" value="LOCAL‎" />
+      <updated>1789833528212</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -103,10 +119,12 @@
     <MESSAGE value="Added requirements." />
     <MESSAGE value="Fixed the README file" />
     <MESSAGE value="Updated the README file.&#10;Added run_app.py to avoid any command line prompts." />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated the README file.&#10;Added run_app.py to avoid any command line prompts." />
+    <MESSAGE value="Updated the README file.&#10;Added example Images.&#10;Added names for th classes." />
+    <MESSAGE value="Fixed RTL sliders in the distortion settings." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed RTL sliders in the distortion settings." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/imageClassifier$run_app.coverage" NAME="run_app Coverage Results" MODIFIED="1789832590295" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/imageClassifier$streamlit_app.coverage" NAME="streamlit_app Coverage Results" MODIFIED="1789831524356" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/imageClassifier$run_app.coverage" NAME="run_app Coverage Results" MODIFIED="1789834622591" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/imageClassifier$streamlit_app.coverage" NAME="streamlit_app Coverage Results" MODIFIED="1789834207468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -22,6 +22,7 @@ from pathlib import Path
 import joblib
 import numpy as np
 import streamlit as st
+import streamlit.components.v1 as components
 import torch
 import torch.nn.functional as F
 from PIL import Image, ImageOps
@@ -38,11 +39,29 @@ LABELS_PATH = Path(__file__).resolve().parent / "labels.json"
 IMAGE_SIZE = 224
 EXAMPLES_DIR = Path(__file__).resolve().parent / "examples"
 EXAMPLE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".webp"}
+SLIDER_COMPONENT_DIR = Path(__file__).resolve().parent / "slider_component"
 
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 
 st.set_page_config(page_title="IML Hackathon Classifier", layout="wide")
+
+_range_slider = components.declare_component(
+    "range_slider", path=str(SLIDER_COMPONENT_DIR)
+)
+
+
+def range_slider(label, min_value, max_value, value=0, step=1, key=None):
+    """RTL-locale-safe replacement for st.slider (native <input type=range>)."""
+    return _range_slider(
+        label=label,
+        min_value=min_value,
+        max_value=max_value,
+        value=value,
+        step=step,
+        key=key,
+        default=value,
+    )
 
 
 def list_example_images():
@@ -143,22 +162,6 @@ def apply_distortions(img: Image.Image, opts: dict) -> Image.Image:
 # --------------------------------------------------------------------------
 # UI
 # --------------------------------------------------------------------------
-st.markdown(
-    """
-    <style>
-    /* Force LTR so sliders (and everything else) don't mirror under an
-       RTL browser/OS locale, e.g. Hebrew or Arabic. */
-    html, body, [data-testid="stAppViewContainer"], [data-testid="stSidebar"] {
-        direction: ltr !important;
-    }
-    [data-testid="stSlider"] * {
-        direction: ltr !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
 st.title("🖼️ IML Hackathon — Image Classifier")
 
 tab_arch, tab_try = st.tabs(["📐 Architecture", "🎛️ Try It"])
@@ -245,20 +248,33 @@ with tab_try:
             "Choose an image", type=["png", "jpg", "jpeg", "bmp", "webp"]
         )
 
-    st.sidebar.header("Distortion controls")
-    opts = {
-        "h_flip": st.sidebar.checkbox("Horizontal flip"),
-        "v_flip": st.sidebar.checkbox("Vertical flip"),
-        "rotation": st.sidebar.slider("Rotation (degrees)", -180, 180, 0),
-        "affine": st.sidebar.checkbox("Affine shear"),
-        "shear": st.sidebar.slider("Shear amount", -50, 50, 0),
-        "grayscale": st.sidebar.checkbox("Grayscale"),
-        "invert": st.sidebar.checkbox("Invert colors"),
-        "blur": st.sidebar.slider("Gaussian blur radius", 0.0, 10.0, 0.0, step=0.5),
-        "brightness": st.sidebar.slider("Brightness", 0.2, 2.0, 1.0, step=0.1),
-        "contrast": st.sidebar.slider("Contrast", 0.2, 2.0, 1.0, step=0.1),
-        "saturation": st.sidebar.slider("Saturation", 0.0, 2.0, 1.0, step=0.1),
-    }
+    with st.sidebar:
+        st.header("Distortion controls")
+        opts = {
+            "h_flip": st.checkbox("Horizontal flip"),
+            "v_flip": st.checkbox("Vertical flip"),
+            "rotation": range_slider(
+                "Rotation (degrees)", -180, 180, value=0, step=5, key="rotation"
+            ),
+            "affine": st.checkbox("Affine shear"),
+            "shear": range_slider(
+                "Shear amount", -50, 50, value=0, step=5, key="shear"
+            ),
+            "grayscale": st.checkbox("Grayscale"),
+            "invert": st.checkbox("Invert colors"),
+            "blur": range_slider(
+                "Gaussian blur radius", 0, 10, value=0, step=0.5, key="blur"
+            ),
+            "brightness": range_slider(
+                "Brightness", 0.2, 2.0, value=1.0, step=0.1, key="brightness"
+            ),
+            "contrast": range_slider(
+                "Contrast", 0.2, 2.0, value=1.0, step=0.1, key="contrast"
+            ),
+            "saturation": range_slider(
+                "Saturation", 0.0, 2.0, value=1.0, step=0.1, key="saturation"
+            ),
+        }
 
     default_names = load_default_class_names()
     class_names_input = st.sidebar.text_input(
