@@ -68,6 +68,7 @@ imageClassifier/
 ├── predict.py          # Grader-facing prediction wrapper
 ├── weights.joblib      # Trained model weights (best checkpoint by F1)
 ├── streamlit_app.py    # Interactive demo app
+├── run_app.py          # One-click launcher (no CLI needed)
 ├── requirements.txt
 └── README.md
 ```
@@ -76,16 +77,24 @@ imageClassifier/
 
 ## 🚀 Try It Yourself
 
-An interactive Streamlit app lets you upload an image, apply the same
-kinds of distortions used in fine-tuning, and see whether the model
-still recognizes it.
+First, install dependencies:
 
 ```bash
 pip install -r requirements.txt
+```
+
+Then launch the app one of two ways:
+
+**Option A — one click, no command line:**
+Run `run_app.py` (double-click it, or `python run_app.py`). It starts the
+Streamlit server for you and skips the first-run email/telemetry prompt.
+
+**Option B — standard Streamlit CLI:**
+```bash
 streamlit run streamlit_app.py
 ```
 
-The app has two tabs:
+Either way, your browser opens to an app with two tabs:
 
 - **📐 Architecture** — a visual walkthrough of the network design and
   training results above.
