@@ -2,7 +2,7 @@
 Streamlit playground for the IML Hackathon image classifier.
 
 Two tabs:
-  1. Architecture — explains the network design (from README.md)
+  1. Architecture — explains the network design (from README.txt)
   2. Try It       — upload an image, apply the same kinds of distortions
                      used during fine-tuning, and see whether the model
                      still recognizes it.
@@ -16,6 +16,8 @@ Expects these files in the same folder:
 """
 
 import io
+import json
+from pathlib import Path
 
 import joblib
 import numpy as np
@@ -32,12 +34,37 @@ from model import ModelArchitecture
 # --------------------------------------------------------------------------
 NUM_CLASSES = 20
 WEIGHTS_PATH = "weights.joblib"
+LABELS_PATH = Path(__file__).resolve().parent / "labels.json"
 IMAGE_SIZE = 224
+EXAMPLES_DIR = Path(__file__).resolve().parent / "examples"
+EXAMPLE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".webp"}
 
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 
 st.set_page_config(page_title="IML Hackathon Classifier", layout="wide")
+
+
+def list_example_images():
+    """Any image files dropped into the examples/ folder next to this script."""
+    if not EXAMPLES_DIR.exists():
+        return []
+    return sorted(
+        p for p in EXAMPLES_DIR.iterdir() if p.suffix.lower() in EXAMPLE_EXTENSIONS
+    )
+
+
+def load_default_class_names():
+    """Human-readable class names from labels.json, e.g. {"0": "goldfish", ...}."""
+    if not LABELS_PATH.exists():
+        return None
+    with open(LABELS_PATH, "r") as f:
+        raw = json.load(f)
+    try:
+        ordered = [raw[str(i)] for i in range(NUM_CLASSES)]
+    except KeyError:
+        return None
+    return [name.replace("_", " ").title() for name in ordered]
 
 
 # --------------------------------------------------------------------------
@@ -76,7 +103,7 @@ def predict(model, img: Image.Image):
 
 
 # --------------------------------------------------------------------------
-# Distortions (mirrors the manipulations listed in README.md)
+# Distortions (mirrors the manipulations listed in README.txt)
 # --------------------------------------------------------------------------
 def apply_distortions(img: Image.Image, opts: dict) -> Image.Image:
     out = img.convert("RGB")
@@ -86,7 +113,10 @@ def apply_distortions(img: Image.Image, opts: dict) -> Image.Image:
     if opts["v_flip"]:
         out = ImageOps.flip(out)
     if opts["rotation"] != 0:
-        out = out.rotate(opts["rotation"], expand=True, fillcolor=(127, 127, 127))
+        # PIL rotates counter-clockwise for positive angles, which feels
+        # backwards next to a left-to-right slider — negate so dragging
+        # the slider right visually rotates the image clockwise.
+        out = out.rotate(-opts["rotation"], expand=True, fillcolor=(127, 127, 127))
     if opts["affine"]:
         w, h = out.size
         shear = opts["shear"] / 100.0
@@ -179,9 +209,25 @@ Gaussian blur.
 with tab_try:
     st.header("Upload an image and test the model")
 
-    uploaded_file = st.file_uploader(
-        "Choose an image", type=["png", "jpg", "jpeg", "bmp", "webp"]
-    )
+    examples = list_example_images()
+    source = "Upload my own"
+    if examples:
+        source = st.radio(
+            "Image source",
+            ["Upload my own", "Use an example"],
+            horizontal=True,
+        )
+
+    uploaded_file = None
+    example_choice = None
+    if source == "Use an example":
+        example_choice = st.selectbox(
+            "Choose an example image", examples, format_func=lambda p: p.name
+        )
+    else:
+        uploaded_file = st.file_uploader(
+            "Choose an image", type=["png", "jpg", "jpeg", "bmp", "webp"]
+        )
 
     st.sidebar.header("Distortion controls")
     opts = {
@@ -198,11 +244,14 @@ with tab_try:
         "saturation": st.sidebar.slider("Saturation", 0.0, 2.0, 1.0, step=0.1),
     }
 
+    default_names = load_default_class_names()
     class_names_input = st.sidebar.text_input(
-        "Class names (optional, comma-separated, 20 values)",
-        help="If left blank, predictions are shown as class indices 0–19.",
+        "Override class names (optional, comma-separated, 20 values)",
+        help="Leave blank to use the bundled labels.json names."
+        if default_names
+        else "No labels.json found — leave blank to show class indices 0–19.",
     )
-    class_names = None
+    class_names = default_names
     if class_names_input.strip():
         names = [n.strip() for n in class_names_input.split(",")]
         if len(names) == NUM_CLASSES:
@@ -210,8 +259,11 @@ with tab_try:
         else:
             st.sidebar.warning(f"Expected {NUM_CLASSES} names, got {len(names)}. Ignoring.")
 
-    if uploaded_file is not None:
-        original_img = Image.open(io.BytesIO(uploaded_file.read()))
+    if uploaded_file is not None or example_choice is not None:
+        if uploaded_file is not None:
+            original_img = Image.open(io.BytesIO(uploaded_file.read()))
+        else:
+            original_img = Image.open(example_choice)
         distorted_img = apply_distortions(original_img, opts)
 
         col1, col2 = st.columns(2)
@@ -236,4 +288,4 @@ with tab_try:
             {label(i): p for i, p in zip(top_idx, top_probs)}
         )
     else:
-        st.info("Upload an image above to run it through the model.")
+        st.info("Upload an image above (or pick an example) to run it through the model.")
