@@ -143,6 +143,22 @@ def apply_distortions(img: Image.Image, opts: dict) -> Image.Image:
 # --------------------------------------------------------------------------
 # UI
 # --------------------------------------------------------------------------
+st.markdown(
+    """
+    <style>
+    /* Force LTR so sliders (and everything else) don't mirror under an
+       RTL browser/OS locale, e.g. Hebrew or Arabic. */
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stSidebar"] {
+        direction: ltr !important;
+    }
+    [data-testid="stSlider"] * {
+        direction: ltr !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 st.title("🖼️ IML Hackathon — Image Classifier")
 
 tab_arch, tab_try = st.tabs(["📐 Architecture", "🎛️ Try It"])
