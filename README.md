@@ -32,6 +32,16 @@ feature map to 1×1, and a dense classifier head
 (`Linear → BatchNorm → ReLU → Dropout → Linear`) maps the resulting
 512-dim feature vector to the **20 output classes**.
 
+### The 20 Classes
+
+| | | | |
+|---|---|---|---|
+| Goldfish | Bald Eagle | Toucan | Jellyfish |
+| Tiger | African Elephant | Acoustic Guitar | Airliner |
+| Balloon | Lighthouse | Castle | Mobile Phone |
+| Container Ship | French Horn | Laptop | Sports Car |
+| Mushroom | Lemon | Pizza | Daisy |
+
 ---
 
 ## 🏋️ Training Strategy
