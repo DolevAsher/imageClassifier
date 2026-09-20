@@ -224,6 +224,12 @@ Gaussian blur.
         "gain in robustness to distortions."
     )
 
+    st.subheader("The 20 Classes")
+    class_list = load_default_class_names() or [f"Class {i}" for i in range(NUM_CLASSES)]
+    cols = st.columns(4)
+    for i, name in enumerate(class_list):
+        cols[i % 4].markdown(f"- {name}")
+
 # --- Tab 2: Try It -----------------------------------------------------
 with tab_try:
     st.header("Upload an image and test the model")
